@@ -1,0 +1,158 @@
+*{
+	margin: 0;
+	padding: 0;
+	font-family: 'New Tegomin', serif;
+}
+
+#header{
+	position: absolute;
+	z-index: 10;
+	width: 100%;
+}
+
+.navbar{
+	padding: 50px 0;
+}
+
+.navbar-brand{
+	font-weight: 600;
+	font-size: 1.5em;
+}
+
+.navbar-dark .navbar-brand {
+	color: #393e46;
+}
+
+.nav-item{
+	font-weight: 600;
+	text-transform: uppercase;
+	padding-left: 10px;
+}
+
+.navbar-dark .navbar-bar .nav-item .nav-link:hover{
+	background: #dcdde1;
+	color: #393e46;
+}
+
+.main{
+	position: relative;
+	background: url("https://mdbcdn.b-cdn.net/img/Photos/Others/images/76.jpg");
+	min-height: 65vh;
+	background-size: cover;
+	background-position: center;
+	padding: 220px 0 200px;
+}
+
+.main h2{
+	margin: 0;
+	padding: 0;
+	font-size: 2.6em;
+	color: #56776c;
+	text-transform: uppercase;
+	font-weight: bold;
+}
+
+.main p{
+	margin-top: 1em;
+	padding: 0;
+	font-size: 1.5em;
+	color: #f5f7b2;
+}
+
+.main .btn{
+	background: #715093;
+	color: #fff;
+	border-radius: 0;
+	padding-left: 20px;
+	padding-right: 20px;
+}
+
+.media-body h2{
+	font-size: 1.5em;
+	font-family: sans-serif;
+}
+
+.read-more-btn{
+	background-image: linear-gradient(to right,#383e56,#fb743e);
+	padding: 5px 12px 8px;
+	border-radius: 20px;
+	line-height: 20px;
+	font-size: 14px;
+	color: #fff;
+	border: none !important;
+}
+
+.read-more-btn:hover{
+	background-image: linear-gradient(to right,#ffefa1,#ffcb91);
+	text-decoration: none;
+	color: #383e56;
+}
+
+.article-title {
+    color: #81b214;
+	font-size: 1em;
+  }
+
+  .article-title:hover {
+    color: #393e46;
+    text-decoration: none;
+  }
+  
+  .article-title a{
+	  text-decoration: none;
+  }
+
+  .article-title h2{
+	text-align: justify;
+}
+
+  .article-img {
+    height: auto;
+    width: 65px;
+    margin-right: 16px;
+  }
+    
+  .article-svg {
+    width: 25px;
+    height: 25px;
+    vertical-align: none;
+  }
+  
+  .account-img {
+    height: 125px;
+    width: 125px;
+    margin-right: 20px;
+    margin-bottom: 16px;
+  }
+  
+  .account-heading {
+    font-size: 2.5rem;
+  }
+
+
+
+
+footer{
+	background: #383838;
+	padding: 1rem 2rem 3rem;
+}
+
+footer p, footer a{
+	color: white;
+	text-decoration: none;
+}
+
+ul.social{
+	list-style-type: none;
+	display: flex;
+	max-width: 16rem;
+	margin: 0 auto;	
+}
+
+ul.social li{
+	margin: 0 auto;
+}
+
+footer .svg-inline--fa{
+	font-size: 5rem;
+}

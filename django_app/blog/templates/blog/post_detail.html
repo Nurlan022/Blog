@@ -1,0 +1,225 @@
+{% load static %}
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,400;1,700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="{% static 'blog/post_detail.css' %}">
+	<title></title>
+	<style>
+		.media h2{
+			font-family: 'Rubik', serif;
+			font-size: 3em;
+			font-weight: bold;
+		}
+		.media-body p{
+			font-size: 1.5em;
+		}
+		.content-item h3 {
+			font-weight:600;
+			font-size:20px;
+			color:#555555;
+			margin:10px;
+			padding:0;
+		}
+		textarea{
+			resize: none;
+			height: 20vh;
+		}
+	</style>
+</head>
+<body>
+	<section id="header">
+		<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+	        <div class="container-fluid">
+	          <a class="navbar-brand" href="{% url 'blog-home' %}">
+			      <img src="https://icons.iconarchive.com/icons/iconarchive/red-orb-alphabet/48/Letter-E-icon.png" alt="" width="30" height="30" class="d-inline-block align-text-top">
+			      Epoch
+			    </a>
+			    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			      <span class="navbar-toggler-icon"></span>
+			    </button>
+	          <div class="collapse navbar-collapse" id="navbarToggle">
+	            <ul class="navbar-nav mx-auto">
+	            	<li class="nav-item active">
+	            		<a class="nav-link" href="{% url 'blog-home' %}">Home</a>
+	            	</li>
+	            	<li class="nav-item">
+	            		<a class="nav-item nav-link" href="{% url 'blog-about' %}">About</a>
+	            	</li>
+	            	<li class="nav-item">
+	            		<a class="nav-item nav-link" href="#">Contact Us</a>
+	            	</li>
+	            </ul>
+	            <form class="d-flex">
+			        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+			        <button class="btn btn-danger ml-2" type="submit"><i class="fa fa-search" ></i></button>
+			    </form>
+	            <!-- Navbar Right Side -->
+	            <div class="navbar-nav">
+	              {% if user.is_authenticated %}
+	                <a class="nav-item nav-link" href="{% url 'post-create' %}">New Post</a>
+	                <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
+	                <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
+	              {% else %}
+	                <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
+	                <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
+	              {% endif %}
+	            </div>
+	          </div>
+	        </div>
+        </nav>
+	</section>
+	<article class="media content-section">
+		<div class="container py-5 px-5">	
+			<h2 class="article-title">{{ object.title }}</h2>
+			<div class="py-3">
+				<img class="rounded-circle article-img" width="28" height="28" src="{{ object.author.profile.image.url }}">
+				<a class="mr-2" href="{% url 'user-posts' object.author.username %}">{{ object.author }}</a>
+				<small class="text-muted">{{ object.date_posted|date:"F d, Y" }}</small>
+				<a class="mr-2" href="{% url 'category' object.category|slugify %}"> #{{ object.category }}</a>
+			</div>
+		    <div class="media-body">
+			    <div class="article-metadata">
+			      {% if object.author == user %}
+			      	<div>
+			      		<a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-update' object.id %}"> Update </a>
+			      		<a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'post-delete' object.id %}"> Delete </a>
+			      	</div>
+			      {% endif %}
+			    </div>
+			    <hr>
+			    <p class="article-content">{{ object.content|safe }}</p>
+			    <form action="{% url 'like_post' post.pk %}" method="POST">
+			    	{% csrf_token %}
+			    	{% if liked %}
+				    	<button type="submit" style="background-color:white; color: red;" name="post_id" value="{{ post.id }}" class="btn btn-sm"><i class="fa fa-heart" aria-hidden="true"></i></button> {{ total_likes }} likes
+				    {% else %}
+				    	<button type="submit" style="background-color:white;" name="post_id" value="{{ post.id }}" class="btn btn-sm"><i class="fa fa-heart-o" aria-hidden="true"></i></button> {{ total_likes }} likes
+				    {%endif%}
+			    </form>	
+			</div>
+	    </div>
+	</article>
+	<section class="content-item" id="comments">
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-8">
+					<form action="{% url 'comment_post' post.pk %}" method="POST">
+					{% csrf_token %}
+					<h3 class="pull-left">New Comment</h3>
+					<br><br>              	
+				    <fieldset>
+				        <div class="row">
+				            <div class="col-sm-3 col-lg-2 hidden-xs">
+				                {% if request.user.is_authenticated %}
+				                	<img class="d-flex g-width-50 g-height-50 rounded-circle g-mt-3 g-mr-15" src="{{user.profile.image.url}}" alt="">
+				                {%endif%}
+				            </div>
+				            <div class="form-group col-xs-12 col-sm-9 col-lg-10">
+				                {{comment_form|crispy}}
+				                {% if request.user.is_authenticated %}
+				                    <button type="submit" class="btn btn-normal btn-warning pull-right my-3">Comment</button>
+				                {%else%}
+				                    <button type="submit" class="btn btn-normal btn-secondary pull-right my-3" disabled="True">Comment</button>
+				                {%endif%}
+				            </div>
+				        </div>  	
+				    </fieldset>
+				</form>
+				</div>
+			</div>
+		</div>
+	</section>
+	<hr>
+	<!-- Comment -->
+	<div class="container">
+		<h5>{{comments.count}} Comment{{ comments|pluralize }}</h5>
+	</div>
+	
+	{%for comment in comments%}
+	{%if comment.is_parent%}
+	<div class="container">
+		<div class="row">
+	    	<div class="col-12">
+	       	 <div class="media g-mb-30 media-comment">
+		            <img class="d-flex g-width-50 g-height-50 rounded-circle g-mt-3 g-mr-15" src="{{comment.name.profile.image.url}}" alt="Image Description">
+		            <div class="media-body u-shadow-v18 g-bg-secondary g-pa-30">
+		              <div class="g-mb-15">
+		               <a href="{% url 'user-posts' comment.name.username %}"> <h5 class="h5 g-color-gray-dark-v1 mb-0">{{comment.name}}</h5></a>
+		                <span class="g-color-gray-dark-v4 g-font-size-12">{{comment.date_added}}</span>
+		              </div>
+		        
+		              <p>{{comment.body}}</p>
+		        
+		              <ul class="list-inline d-sm-flex my-0">
+		                <li class="list-inline-item g-mr-20">
+		                    <i class="fa fa-thumbs-up g-pos-rel g-top-1 g-mr-3"></i>
+		                    <span>{{ comment.likes.all.count }}</span>
+		                </li>
+		                <li class="list-inline-item g-mr-20">
+		                	<button class="btn btn-sm" style="background-color: #fefecc;" onclick="commentReplyToggle('{{comment.pk}}')"><i class="fa fa-comment-o g-pos-rel g-top-1 g-mr-3"></i></button>
+		                </li>
+		                <li class="list-inline-item ml-auto">
+		                	<div class="d-flex flex-row">
+				                <form method="POST"  action="{% url 'comment_like' post.pk comment.pk %}">
+				                    {% csrf_token %}
+				                    <input type="hidden" name="next" value="{{ request.path }}">
+				                    {% if comment.is_liked %}
+					                    <button class="btn btn-sm" style="background-color: #fefecc;color: red;" type="submit"><i class="fa fa-heart-o  g-pos-rel g-top-1 g-mr-3" aria-hidden="true"></i>
+					                {%else%}
+						                <button class="btn btn-sm" style="background-color: #fefecc;  " type="submit"><i class="fa fa-heart-o  g-pos-rel g-top-1 g-mr-3" aria-hidden="true"></i>
+					                {%endif%}
+				                    </button>
+				                </form>
+				            </div>
+		                  </a>
+	                	</li>
+	              	  </ul>
+	              	</div>
+	            </div>
+	        </div>
+	        <div class="row justify-content-center mt-3 mb-5 d-none" id="{{ comment.pk }}">
+		        <div class="col-md-5 col-sm-12">
+		            <form method="POST" action="{% url 'comment_reply' post.pk comment.pk %}">
+		                {% csrf_token %}
+		                {{ comment_form | crispy }}
+		                <div class="d-grid gap-2">
+		                    <button class="btn btn-warning mt-3">Comment</button>
+		                </div>
+		            </form>
+		        </div>
+		    </div>
+		    {%for child_comment in comment.children%}
+		    	<div class="container">
+					<div class="row">
+				    	<div class="col-12">
+				       	 <div class="media g-mb-30 media-comment child-comment">
+					            <img class="d-flex g-width-50 g-height-50 rounded-circle g-mt-3 g-mr-15" src="{{child_comment.name.profile.image.url}}" alt="Image Description">
+					            <div class="media-body u-shadow-v18 g-bg-secondary g-pa-30">
+					              <div class="g-mb-15">
+					               <a href="{% url 'user-posts' child_comment.name.username %}"> <h5 class="h5 g-color-gray-dark-v1 mb-0">{{child_comment.name}}</h5></a>
+					                <span class="g-color-gray-dark-v4 g-font-size-12">{{child_comment.date_added}}</span>
+					              </div>
+					              <p>{{child_comment.body}}</p>
+					          </div>
+					       </div>
+					 <div>
+				</div>
+			</div>
+		    {%endfor%}
+	    </div>
+	</div>
+	{%endif%}
+	{%endfor%}
+	<script type="text/javascript" src="{% static 'js/toggle.js' %}"></script>
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>
