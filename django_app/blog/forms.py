@@ -1,10 +1,10 @@
 from django import forms
 from .models import Post,Category,Comments
 
-choices = Category.objects.all().values_list('name','name')
+choices = Category.objects.all()
 choice_list = []
 for item in choices:
-	choice_list.append(item)
+	choice_list.append(item.name)
 
 class PostForm(forms.ModelForm):
 	class Meta:

@@ -68,6 +68,7 @@ class PostListView(ListView):
 		context["cat_menu"] = cat_menu
 		return context
 
+
 class UserPostListView(ListView):
 	model = Post
 	template_name = 'blog/user_posts.html'
@@ -77,6 +78,7 @@ class UserPostListView(ListView):
 	def get_queryset(self):
 		user = get_object_or_404(User,username=self.kwargs.get('username'))
 		return Post.objects.filter(author=user).order_by('-date_posted')
+
 
 class PostDetailView(DetailView):
 	model = Post
@@ -93,7 +95,7 @@ class PostDetailView(DetailView):
 			liked = True
 			
 		if self.request.method == 'POST':
-			comment_form = CommentsForm(request.POST)
+			comment_form = CommentsForm(self.request.POST)
 		else:
 			comment_form = CommentsForm()
 
@@ -101,7 +103,8 @@ class PostDetailView(DetailView):
 		context["comments"] = comments
 		context["comment_form"] = comment_form
 		return context
-					# it prevents enter post creat view before log in 
+# it prevents enter post creat view before log in
+
 class PostCreateView(LoginRequiredMixin,CreateView):
 	model = Post
 	#fields = ('__all__')
@@ -109,9 +112,13 @@ class PostCreateView(LoginRequiredMixin,CreateView):
 	# Define who is writing post 
 
 	def form_valid(self,form):
-		form.instance.author = self.request.user	
+		print(self.request.POST)
+		print(self.request.FILES)
+		form.instance.author = self.request.user
 		return super().form_valid(form)
-									  # this checks if post.author is user or not 
+									  # this checks if post.author is user or not
+
+
 class PostUpdateView(LoginRequiredMixin,UserPassesTestMixin,UpdateView):
 	model = Post
 	form_class = EditForm
@@ -125,6 +132,7 @@ class PostUpdateView(LoginRequiredMixin,UserPassesTestMixin,UpdateView):
 		if self.request.user == post.author:
 			return True
 		return False
+
 
 class AddCommentLike(LoginRequiredMixin,View):
 	def post(self,request,pk,*args,**kwargs):
@@ -143,6 +151,7 @@ class AddCommentLike(LoginRequiredMixin,View):
 			comment.likes.remove(request.user)
 		next = request.POST.get('next', '/')
 		return HttpResponseRedirect(next)
+
 
 class CommentReplyView(LoginRequiredMixin,View):
 	def post(self,request,post_pk,pk,*args,**kwargs):
@@ -171,6 +180,7 @@ class PostDeleteView(LoginRequiredMixin,UserPassesTestMixin,DeleteView):
 		if self.request.user == post.author:
 			return True
 		return False
+
 
 
 def about(request):

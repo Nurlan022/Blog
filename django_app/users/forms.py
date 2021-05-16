@@ -38,9 +38,18 @@ class UserUpdateForm(forms.ModelForm):
 		model = User
 		fields = ['username','first_name','last_name','email']
 
+
+	def __init__(self,*args,**kwargs):
+		super(UserUpdateForm, self).__init__(*args,**kwargs)
+		self.fields['username'].widget.attrs.update({'class':'form-control'})
+
 class ProfilUpdateForm(forms.ModelForm):
 	birth_day = forms.DateField(label='BirthDay',widget=forms.DateInput(attrs={'type':'date'}))
-
+	image = forms.ImageField()
 	class Meta:
 		model = Profile
 		fields = ['birth_day','image']
+
+	def __init__(self,*args,**kwargs):
+		super(ProfilUpdateForm, self).__init__(*args,**kwargs)
+		self.fields['birth_day'].widget.attrs.update({'class':'form-control'})

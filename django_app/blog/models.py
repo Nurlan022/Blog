@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from ckeditor.fields import RichTextField
 
+
 class Category(models.Model):
 	name = models.CharField(max_length=200)
 
@@ -19,7 +20,7 @@ class Post(models.Model):
 	header_image = models.ImageField(blank=True,default='header.jpg',upload_to='header_pictures')
 	content = RichTextField(blank=True,null=True)
 	date_posted = models.DateTimeField(default=timezone.now)
-	category = models.CharField(max_length=255,default='uncategorized')
+	category = models.ForeignKey(Category,blank=True,null=True,on_delete=models.SET_NULL)
 	snippet = models.TextField(max_length=255)
 	likes = models.ManyToManyField(User,related_name='blog_posts')
 	# one to many relationships      if user is deleted post will be deleted
